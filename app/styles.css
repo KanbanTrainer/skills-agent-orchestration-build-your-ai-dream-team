@@ -1,0 +1,385 @@
+/* ==========================================================================
+   Project Pulse — Dashboard Styles
+   Owned by: Designer
+   Hooks consumed from app/index.html (verified against source):
+     .page-header, .eyebrow, .page-intro
+     .dashboard
+     .project-card, .project-card__header
+     .project-name
+     .status-badge, .status-badge--on-track|--at-risk|--blocked|--complete|--unknown
+     .project-owner, .project-owner__label, .project-owner__value
+     .project-activity
+     .priority, .priority--low|--medium|--high|--critical|--unknown,
+       .priority__label, .priority__value
+     .empty-state, .error-state
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Design tokens
+   -------------------------------------------------------------------------- */
+:root {
+  --color-page-bg: #f2f4f8;
+  --color-card-bg: #ffffff;
+  --color-border: #e1e5ee;
+  --color-text-primary: #1a2233;
+  --color-text-secondary: #4b5468;
+  --color-text-muted: #6b7385;
+  --color-accent: #3454d1;
+  --color-accent-dark: #22389c;
+
+  --color-status-on-track-bg: #e3f7ea;
+  --color-status-on-track-fg: #0b6b3a;
+  --color-status-on-track-border: #9ad9b6;
+
+  --color-status-at-risk-bg: #fff4de;
+  --color-status-at-risk-fg: #8a5a00;
+  --color-status-at-risk-border: #f3cf7a;
+
+  --color-status-blocked-bg: #fde3e1;
+  --color-status-blocked-fg: #a3241a;
+  --color-status-blocked-border: #f3aca5;
+
+  --color-status-complete-bg: #e4edff;
+  --color-status-complete-fg: #1e3a8a;
+  --color-status-complete-border: #b7c9f2;
+
+  --color-status-unknown-bg: #eceef2;
+  --color-status-unknown-fg: #3d4351;
+  --color-status-unknown-border: #cdd2dc;
+
+  --color-priority-low-bg: #eef1f6;
+  --color-priority-low-fg: #4b5468;
+
+  --color-priority-medium-bg: #e4edff;
+  --color-priority-medium-fg: #1e3a8a;
+
+  --color-priority-high-bg: #fff0e0;
+  --color-priority-high-fg: #9a4c00;
+
+  --color-priority-critical-bg: #c81e3a;
+  --color-priority-critical-fg: #ffffff;
+
+  --color-priority-unknown-bg: #eceef2;
+  --color-priority-unknown-fg: #3d4351;
+
+  --shadow-card: 0 1px 2px rgba(20, 25, 40, 0.06), 0 8px 20px rgba(20, 25, 40, 0.08);
+  --shadow-card-hover: 0 4px 10px rgba(20, 25, 40, 0.10), 0 16px 32px rgba(20, 25, 40, 0.14);
+
+  --radius-card: 14px;
+  --radius-pill: 999px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+}
+
+/* --------------------------------------------------------------------------
+   Base / reset
+   -------------------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-page-bg);
+  background-image: radial-gradient(circle at top left, #eef1fb 0%, var(--color-page-bg) 45%);
+  color: var(--color-text-primary);
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  padding: var(--space-6) var(--space-5) var(--space-7);
+}
+
+/* Visible, high-contrast focus treatment for all interactive/focusable elements */
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Page header
+   -------------------------------------------------------------------------- */
+.page-header {
+  max-width: 1200px;
+  margin: 0 auto var(--space-6);
+  padding: 0 var(--space-2);
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-2);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-dark);
+}
+
+.page-header h1 {
+  margin: 0 0 var(--space-2);
+  font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+
+.page-intro {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 1.05rem;
+  color: var(--color-text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard grid
+   -------------------------------------------------------------------------- */
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+}
+
+/* Narrow viewports (~320-480px): collapse to a single, comfortable column */
+@media (max-width: 480px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  body {
+    padding: var(--space-4) var(--space-3) var(--space-6);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Project card
+   -------------------------------------------------------------------------- */
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0; /* prevents long text from forcing overflow in grid cells */
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.project-card:hover,
+.project-card:focus-within {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: #c7cef0;
+}
+
+.project-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.project-name {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere; /* handles very long project names gracefully */
+  word-break: break-word;
+}
+
+/* --------------------------------------------------------------------------
+   Status badge
+   -------------------------------------------------------------------------- */
+.status-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.status-badge--on-track {
+  background: var(--color-status-on-track-bg);
+  color: var(--color-status-on-track-fg);
+  border-color: var(--color-status-on-track-border);
+}
+
+.status-badge--at-risk {
+  background: var(--color-status-at-risk-bg);
+  color: var(--color-status-at-risk-fg);
+  border-color: var(--color-status-at-risk-border);
+}
+
+.status-badge--blocked {
+  background: var(--color-status-blocked-bg);
+  color: var(--color-status-blocked-fg);
+  border-color: var(--color-status-blocked-border);
+}
+
+.status-badge--complete {
+  background: var(--color-status-complete-bg);
+  color: var(--color-status-complete-fg);
+  border-color: var(--color-status-complete-border);
+}
+
+/* Neutral fallback for any status value outside the known enum */
+.status-badge--unknown {
+  background: var(--color-status-unknown-bg);
+  color: var(--color-status-unknown-fg);
+  border-color: var(--color-status-unknown-border);
+}
+
+/* --------------------------------------------------------------------------
+   Owner
+   -------------------------------------------------------------------------- */
+.project-owner {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: 0.92rem;
+}
+
+.project-owner__label {
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+
+.project-owner__value {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------------------
+   Recent activity
+   -------------------------------------------------------------------------- */
+.project-activity {
+  margin: 0;
+  padding-top: var(--space-2);
+  border-top: 1px dashed var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere; /* long recentActivity strings wrap instead of overflowing */
+}
+
+/* --------------------------------------------------------------------------
+   Priority
+   -------------------------------------------------------------------------- */
+.priority {
+  margin: var(--space-1) 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.priority__label {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  opacity: 0.75;
+}
+
+.priority__value {
+  font-weight: 700;
+}
+
+.priority--low {
+  background: var(--color-priority-low-bg);
+  color: var(--color-priority-low-fg);
+}
+
+.priority--medium {
+  background: var(--color-priority-medium-bg);
+  color: var(--color-priority-medium-fg);
+}
+
+.priority--high {
+  background: var(--color-priority-high-bg);
+  color: var(--color-priority-high-fg);
+  font-weight: 600;
+}
+
+/* Critical is the strongest visual signal on the card: solid, high-contrast fill */
+.priority--critical {
+  background: var(--color-priority-critical-bg);
+  color: var(--color-priority-critical-fg);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(200, 30, 58, 0.35);
+}
+
+.priority--critical .priority__label {
+  opacity: 0.85;
+}
+
+/* Neutral fallback for any priority value outside the known enum */
+.priority--unknown {
+  background: var(--color-priority-unknown-bg);
+  color: var(--color-priority-unknown-fg);
+}
+
+/* --------------------------------------------------------------------------
+   Empty / error states
+   -------------------------------------------------------------------------- */
+.empty-state,
+.error-state {
+  grid-column: 1 / -1;
+  margin: var(--space-4) 0 0;
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-card);
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.empty-state {
+  background: #fff;
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.error-state {
+  background: var(--color-status-blocked-bg);
+  border: 1px solid var(--color-status-blocked-border);
+  color: var(--color-status-blocked-fg);
+}
+
+/* --------------------------------------------------------------------------
+   Many cards (10+): keep alignment tidy, no horizontal scroll
+   -------------------------------------------------------------------------- */
+@media (min-width: 1600px) {
+  .dashboard,
+  .page-header {
+    max-width: 1440px;
+  }
+}

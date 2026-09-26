@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="page-header">
+      <p class="eyebrow">Team delivery snapshot</p>
+      <h1>Project Pulse</h1>
+      <p class="page-intro">A quick view of active project ownership, momentum, status, and priority.</p>
+    </header>
+
+    <main class="dashboard" aria-live="polite" aria-label="Project dashboard">
+      <p class="empty-state">Loading project pulse data…</p>
+    </main>
+
+    <script>
+      const dashboard = document.querySelector(".dashboard");
+      const dataUrl = "./project-data.json";
+
+      const statusValues = new Set(["On Track", "At Risk", "Blocked", "Complete"]);
+      const priorityValues = new Set(["Low", "Medium", "High", "Critical"]);
+
+      function slugify(value, allowedValues) {
+        if (!allowedValues.has(value)) {
+          return "unknown";
+        }
+
+        return value
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
+      }
+
+      function valueOrPlaceholder(value) {
+        if (typeof value !== "string" || value.trim() === "") {
+          return "—";
+        }
+
+        return value;
+      }
+
+      function clearDashboard() {
+        while (dashboard.firstChild) {
+          dashboard.removeChild(dashboard.firstChild);
+        }
+      }
+
+      function showMessage(message, className) {
+        clearDashboard();
+
+        const messageElement = document.createElement("p");
+        messageElement.className = className;
+        messageElement.textContent = message;
+        dashboard.appendChild(messageElement);
+      }
+
+      function createLabeledValue(labelText, valueText, className) {
+        const wrapper = document.createElement("p");
+        wrapper.className = className;
+
+        const label = document.createElement("span");
+        label.className = `${className}__label`;
+        label.textContent = labelText;
+
+        const value = document.createElement("span");
+        value.className = `${className}__value`;
+        value.textContent = valueText;
+
+        wrapper.append(label, value);
+        return wrapper;
+      }
+
+      function createProjectCard(project) {
+        const name = valueOrPlaceholder(project.name);
+        const owner = valueOrPlaceholder(project.owner);
+        const status = valueOrPlaceholder(project.status);
+        const recentActivity = valueOrPlaceholder(project.recentActivity);
+        const priority = valueOrPlaceholder(project.priority);
+        const statusSlug = slugify(status, statusValues);
+        const prioritySlug = slugify(priority, priorityValues);
+
+        const card = document.createElement("article");
+        card.className = "project-card";
+
+        const header = document.createElement("div");
+        header.className = "project-card__header";
+
+        const title = document.createElement("h2");
+        title.className = "project-name";
+        title.textContent = name;
+
+        const statusBadge = document.createElement("span");
+        statusBadge.className = `status-badge status-badge--${statusSlug}`;
+        statusBadge.textContent = status;
+
+        header.append(title, statusBadge);
+
+        const ownerElement = createLabeledValue("Owner", owner, "project-owner");
+
+        const activityElement = document.createElement("p");
+        activityElement.className = "project-activity";
+        activityElement.textContent = recentActivity;
+
+        const priorityElement = createLabeledValue("Priority", priority, "priority");
+        priorityElement.classList.add(`priority--${prioritySlug}`);
+
+        card.append(header, ownerElement, activityElement, priorityElement);
+        return card;
+      }
+
+      function renderProjects(projects) {
+        clearDashboard();
+
+        if (!Array.isArray(projects) || projects.length === 0) {
+          showMessage("No projects to display yet.", "empty-state");
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        projects.forEach((project) => {
+          fragment.appendChild(createProjectCard(project || {}));
+        });
+
+        dashboard.appendChild(fragment);
+      }
+
+      async function loadProjects() {
+        try {
+          const response = await fetch(dataUrl);
+
+          if (!response.ok) {
+            throw new Error(`Unable to load ${dataUrl}: ${response.status} ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          renderProjects(data.projects);
+        } catch (error) {
+          console.error("Project Pulse data load failed", error);
+          showMessage("Project data could not be loaded. Please refresh the page or try again later.", "error-state");
+        }
+      }
+
+      loadProjects();
+    </script>
+  </body>
+</html>

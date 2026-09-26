@@ -1,0 +1,39 @@
+{
+  "projects": [
+    {
+      "name": "Customer Insights Portal",
+      "owner": "Mona Patel",
+      "status": "On Track",
+      "recentActivity": "Completed stakeholder review and queued the dashboard filter refinements for the next sprint.",
+      "priority": "High"
+    },
+    {
+      "name": "Regional Fulfillment Automation and Warehouse Signal Modernization Initiative",
+      "owner": "Jordan Lee",
+      "status": "At Risk",
+      "recentActivity": "Integration testing uncovered intermittent carrier webhook delays across three regions; the team is pairing with operations to define a temporary manual reconciliation process while the vendor investigates the retry behavior.",
+      "priority": "Critical"
+    },
+    {
+      "name": "Partner API Gateway",
+      "owner": "Sam Rivera",
+      "status": "Blocked",
+      "recentActivity": "Waiting on security approval for the updated OAuth scopes before production credentials can be issued.",
+      "priority": "Medium"
+    },
+    {
+      "name": "Quarterly Planning Toolkit",
+      "owner": "Priya Nair",
+      "status": "Complete",
+      "recentActivity": "Published final templates and archived retrospective notes for future planning cycles.",
+      "priority": "Low"
+    },
+    {
+      "name": "Mobile Check-In Refresh",
+      "owner": "Alex Chen",
+      "status": "On Track",
+      "recentActivity": "Design QA passed on the primary flow; accessibility fixes are ready for regression testing.",
+      "priority": "Medium"
+    }
+  ]
+}
